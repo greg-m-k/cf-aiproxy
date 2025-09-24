@@ -1,4 +1,4 @@
-name = "ai-proxy-worker"
+name = "cf-aiproxy"
 main = "src/index.js"
 compatibility_date = "2025-01-24"
 
