@@ -11,27 +11,32 @@ export default {
       });
     }
 
-    // Rewrite request to Cloudflare AI Gateway
+    // Incoming path (what client sent to proxy)
     const incomingPath = url.pathname; // e.g. /v1/chat/completions
 
-    const gatewayUrl = new URL(request.url);
-    gatewayUrl.hostname = "gateway.ai.cloudflare.com";
-    gatewayUrl.protocol = "https:";
-
-    // If client requests /v1/chat/completions → expand to full AI Gateway path
+    // Build the gateway URL explicitly
+    let gatewayPath;
     if (incomingPath.startsWith("/v1/chat/completions")) {
-      gatewayUrl.pathname = `/v1/${env.AI_ACCOUNT_HASH}/${env.AI_GATEWAY_NAME}/openai${incomingPath}`;
+      gatewayPath = `/v1/${env.AI_ACCOUNT_HASH}/${env.AI_GATEWAY_NAME}/openai${incomingPath}`;
+    } else {
+      // passthrough for other endpoints if needed
+      gatewayPath = `/v1/${env.AI_ACCOUNT_HASH}/${env.AI_GATEWAY_NAME}/openai${incomingPath}`;
     }
 
-    // Forward the request
-    const newRequest = new Request(gatewayUrl.toString(), request);
+    const gatewayUrl = `https://gateway.ai.cloudflare.com${gatewayPath}`;
 
-    // Inject AI Gateway key (stored as a Worker secret)
+    // Debug log (viewable in Cloudflare dashboard → Worker logs)
+    console.log("Proxying request:", incomingPath, "→", gatewayUrl);
+
+    // Forward request
+    const newRequest = new Request(gatewayUrl, request);
+
+    // Inject key
     newRequest.headers.set("Authorization", `Bearer ${env.AI_GATEWAY_KEY}`);
 
     const response = await fetch(newRequest);
 
-    // Clone + add CORS headers
+    // Clone and add CORS
     const modifiedResponse = new Response(response.body, response);
     corsHeaders(origin, env.ALLOWED_ORIGINS).forEach((value, key) => {
       modifiedResponse.headers.set(key, value);
@@ -41,7 +46,6 @@ export default {
   },
 };
 
-// CORS helper
 function corsHeaders(origin, allowedList) {
   if (!allowedList) return new Headers({});
   const allowedOrigins = allowedList.split(",").map(o => o.trim());
