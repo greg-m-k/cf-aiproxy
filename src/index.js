@@ -11,27 +11,27 @@ export default {
       });
     }
 
-    // Rewrite request to AI Gateway
-    const gatewayUrl = new URL(request.url);
+    // Rewrite request to Cloudflare AI Gateway
+    const incomingPath = url.pathname; // e.g. /v1/chat/completions
 
-    // Replace hostname + protocol
+    const gatewayUrl = new URL(request.url);
     gatewayUrl.hostname = "gateway.ai.cloudflare.com";
     gatewayUrl.protocol = "https:";
 
-    // If frontend calls /v1/chat/completions → rewrite into full AI Gateway path
-    if (gatewayUrl.pathname.startsWith("/v1/chat/completions")) {
-      gatewayUrl.pathname = `/v1/${env.AI_ACCOUNT_HASH}/${env.AI_GATEWAY_NAME}/openai${gatewayUrl.pathname}`;
+    // If client requests /v1/chat/completions → expand to full AI Gateway path
+    if (incomingPath.startsWith("/v1/chat/completions")) {
+      gatewayUrl.pathname = `/v1/${env.AI_ACCOUNT_HASH}/${env.AI_GATEWAY_NAME}/openai${incomingPath}`;
     }
 
     // Forward the request
     const newRequest = new Request(gatewayUrl.toString(), request);
 
-    // Inject AI Gateway key (secret in Cloudflare dashboard)
+    // Inject AI Gateway key (stored as a Worker secret)
     newRequest.headers.set("Authorization", `Bearer ${env.AI_GATEWAY_KEY}`);
 
     const response = await fetch(newRequest);
 
-    // Clone and add CORS headers
+    // Clone + add CORS headers
     const modifiedResponse = new Response(response.body, response);
     corsHeaders(origin, env.ALLOWED_ORIGINS).forEach((value, key) => {
       modifiedResponse.headers.set(key, value);
@@ -41,7 +41,7 @@ export default {
   },
 };
 
-// CORS Helper
+// CORS helper
 function corsHeaders(origin, allowedList) {
   if (!allowedList) return new Headers({});
   const allowedOrigins = allowedList.split(",").map(o => o.trim());
