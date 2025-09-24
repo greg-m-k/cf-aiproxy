@@ -1,0 +1,13 @@
+name = "ai-proxy-worker"
+main = "src/index.js"
+compatibility_date = "2025-01-24"
+
+# Bind to BOTH domains
+routes = [
+  { pattern = "proxy.draftresume.app/*", custom_domain = true },
+  { pattern = "proxy.draftpatent.app/*", custom_domain = true }
+]
+
+# Environment variables (set these via wrangler secret put)
+# AI_GATEWAY_KEY - Your Cloudflare AI Gateway API key
+# ALLOWED_ORIGINS - Comma-separated list of allowed origins for CORS

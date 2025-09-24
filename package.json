@@ -1,0 +1,22 @@
+{
+  "name": "ai-proxy-worker",
+  "version": "1.0.0",
+  "description": "Shared Cloudflare Worker for AI proxy serving multiple domains",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "keywords": [
+    "cloudflare",
+    "worker",
+    "ai-proxy",
+    "cors"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
