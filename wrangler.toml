@@ -8,6 +8,10 @@ routes = [
   { pattern = "proxy.draftpatent.app", custom_domain = true }
 ]
 
+
+[observability.logs]
+enabled = true
+
 # Environment variables (set these via wrangler secret put)
 # AI_GATEWAY_KEY - Your Cloudflare AI Gateway API key
 # ALLOWED_ORIGINS - Comma-separated list of allowed origins for CORS
