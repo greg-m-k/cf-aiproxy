@@ -10,7 +10,7 @@ routes = [
 [vars]
 AI_ACCOUNT_HASH = "a5ac50eac3fc3bba71323b08817bd04e"
 AI_GATEWAY_NAME = "drafting-gateway"
-ALLOWED_ORIGINS = "http://localhost:3000,https://draftresume.app,https://draftpatent.app"
+ALLOWED_ORIGINS = "http://localhost:3000,http://localhost:8000,https://draftresume.app,https://draftpatent.app"
 
 [observability.logs]
 enabled = true
