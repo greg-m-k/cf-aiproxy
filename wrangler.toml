@@ -2,16 +2,15 @@ name = "cf-aiproxy"
 main = "src/index.js"
 compatibility_date = "2025-01-24"
 
-# Bind to BOTH domains
 routes = [
   { pattern = "proxy.draftresume.app", custom_domain = true },
   { pattern = "proxy.draftpatent.app", custom_domain = true }
 ]
 
+[vars]
+AI_ACCOUNT_HASH = "a5ac50eac3fc3bba71323b08817bd04e"
+AI_GATEWAY_NAME = "drafting-gateway"
+ALLOWED_ORIGINS = "http://localhost:3000,https://draftresume.app,https://draftpatent.app"
 
 [observability.logs]
 enabled = true
-
-# Environment variables (set these via wrangler secret put)
-# AI_GATEWAY_KEY - Your Cloudflare AI Gateway API key
-# ALLOWED_ORIGINS - Comma-separated list of allowed origins for CORS
